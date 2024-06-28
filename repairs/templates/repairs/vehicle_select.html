@@ -1,0 +1,271 @@
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Vehicle and Repair</title>
+    <style>
+        .form-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-column {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .form-column:last-child {
+            margin-right: 0;
+        }
+        .disabled-button {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        select {
+            height: auto; 
+            overflow-y: scroll; 
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const makeModelMap = {
+                'Ford': ['Mustang'],
+                'Dodge': ['Charger'],
+                'Chevrolet': ['Corvette']
+            };
+
+            const modelTrimMap = {
+                'Mustang': ['Cobra'],
+                'Charger': ['Hellcat'],
+                'Corvette': ['Z06']
+            };
+
+            const typeOfRepairMap = {
+                'Body': ['Bumper Replacement'],
+                'Fuel System': [
+                    'Fuel Pump Replacement',
+                    'Fuel Injectors',
+                    'Fuel Rail'
+                ],
+                'Engine': ['Oil Pan Gasket Replacement'],
+                'Transmission': [
+                    'Transmission Fluid Change',
+                    'Short Throw Shifter'],
+                'Brake System': ['Brake Pad Replacement'],
+                'Suspension System': ['Shock Absorber Replacement']
+            };
+
+            const yearSelect = document.getElementById('id_year');
+            const makeSelect = document.getElementById('id_make');
+            const modelSelect = document.getElementById('id_model');
+            const trimSelect = document.getElementById('id_trim');
+            const typeOfRepairSelect = document.getElementById('id_type_of_repair');
+            const repairSelect = document.getElementById('id_repair');
+            const submitButton = document.querySelector('button[type="submit"]');
+
+            function checkFormCompletion() {
+                if (
+                    yearSelect.value &&
+                    makeSelect.value &&
+                    modelSelect.value &&
+                    trimSelect.value &&
+                    typeOfRepairSelect.value &&
+                    repairSelect.value
+                ) {
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('disabled-button');
+                } else {
+                    submitButton.disabled = true;
+                    submitButton.classList.add('disabled-button');
+                }
+            }
+
+            function populateYearOptions() {
+                const years = [];
+                for (let year = 1980; year <= new Date().getFullYear(); year++) {
+                    years.push(year);
+                }
+                yearSelect.innerHTML = '<option value="">Year</option>';
+                years.forEach(year => {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    yearSelect.appendChild(option);
+                });
+            }
+
+            function resetForm() {
+                yearSelect.value = '';
+                makeSelect.innerHTML = '<option value="">Make</option>';
+                makeSelect.disabled = true;
+                modelSelect.innerHTML = '<option value="">Select Model</option>';
+                modelSelect.disabled = true;
+                trimSelect.innerHTML = '<option value="">Select Trim</option>';
+                trimSelect.disabled = true;
+                typeOfRepairSelect.innerHTML = '<option value="">Select Type of Repair</option>';
+                typeOfRepairSelect.disabled = true;
+                repairSelect.innerHTML = '<option value="">Select Repair</option>';
+                repairSelect.disabled = true;
+                submitButton.disabled = true;
+                submitButton.classList.add('disabled-button');
+            }
+
+            populateYearOptions();
+            resetForm();
+
+            yearSelect.addEventListener('change', function () {
+                if (yearSelect.value) {
+                    makeSelect.disabled = false;
+                    makeSelect.innerHTML = '<option value="">Make</option>';
+                    Object.keys(makeModelMap).forEach(make => {
+                        const option = document.createElement('option');
+                        option.value = make;
+                        option.textContent = make;
+                        makeSelect.appendChild(option);
+                    });
+                } else {
+                    resetForm();
+                }
+                checkFormCompletion();
+            });
+
+            makeSelect.addEventListener('change', function () {
+                if (makeSelect.value) {
+                    modelSelect.disabled = false;
+                    modelSelect.innerHTML = '<option value="">Select Model</option>';
+                    const models = makeModelMap[makeSelect.value] || [];
+                    models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model;
+                        option.textContent = model;
+                        modelSelect.appendChild(option);
+                    });
+                } else {
+                    modelSelect.disabled = true;
+                    trimSelect.disabled = true;
+                    typeOfRepairSelect.disabled = true;
+                    repairSelect.disabled = true;
+                }
+                checkFormCompletion();
+            });
+
+            modelSelect.addEventListener('change', function () {
+                if (modelSelect.value) {
+                    trimSelect.disabled = false;
+                    trimSelect.innerHTML = '<option value="">Select Trim</option>';
+                    const trims = modelTrimMap[modelSelect.value] || [];
+                    trims.forEach(trim => {
+                        const option = document.createElement('option');
+                        option.value = trim;
+                        option.textContent = trim;
+                        trimSelect.appendChild(option);
+                    });
+                } else {
+                    trimSelect.disabled = true;
+                    typeOfRepairSelect.disabled = true;
+                    repairSelect.disabled = true;
+                }
+                checkFormCompletion();
+            });
+
+            trimSelect.addEventListener('change', function () {
+                if (trimSelect.value) {
+                    typeOfRepairSelect.disabled = false;
+                    typeOfRepairSelect.innerHTML = '<option value="">Select Type of Repair</option>';
+                    Object.keys(typeOfRepairMap).forEach(type => {
+                        const option = document.createElement('option');
+                        option.value = type;
+                        option.textContent = type;
+                        typeOfRepairSelect.appendChild(option);
+                    });
+                } else {
+                    typeOfRepairSelect.disabled = true;
+                    repairSelect.disabled = true;
+                }
+                checkFormCompletion();
+            });
+
+            typeOfRepairSelect.addEventListener('change', function () {
+                if (typeOfRepairSelect.value) {
+                    repairSelect.disabled = false;
+                    repairSelect.innerHTML = '<option value="">Select Repair</option>';
+                    const repairs = typeOfRepairMap[typeOfRepairSelect.value] || [];
+                    repairs.forEach(repair => {
+                        const option = document.createElement('option');
+                        option.value = repair;
+                        option.textContent = repair;
+                        repairSelect.appendChild(option);
+                    });
+                } else {
+                    repairSelect.disabled = true;
+                }
+                checkFormCompletion();
+            });
+
+            repairSelect.addEventListener('change', function () {
+                checkFormCompletion();
+            });
+
+            document.getElementById('repair-form').addEventListener('submit', function (event) {
+                event.preventDefault();
+                const vehicle = `${yearSelect.value} ${makeSelect.value} ${modelSelect.value} ${trimSelect.value}`;
+                const repair = repairSelect.value;
+                const url = `/repairs/instructions/${encodeURIComponent(vehicle)}/${encodeURIComponent(repair)}/`;
+                window.open(url, '_blank');
+                resetForm();
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Select Vehicle and Repair</h1>
+    <form id="repair-form" method="post">
+        {% csrf_token %}
+        <div class="form-container">
+            <div class="form-column">
+                <h2>Vehicle Information</h2>
+                <label for="id_year">Year:</label>
+                <select id="id_year" name="year">
+                    <option value="">Year</option>
+                </select>
+                <br>
+                <label for="id_make">Make:</label>
+                <select id="id_make" name="make">
+                    <option value="">Make</option>
+                </select>
+                <br>
+                <label for="id_model">Model:</label>
+                <select id="id_model" name="model">
+                    <option value="">Select Model</option>
+                </select>
+                <br>
+                <label for="id_trim">Trim:</label>
+                <select id="id_trim" name="trim">
+                    <option value="">Select Trim</option>
+                </select>
+            </div>
+            <div class="form-column">
+                <h2>Repair Information</h2>
+                <label for="id_type_of_repair">Type of Repair:</label>
+                <select id="id_type_of_repair" name="type_of_repair">
+                    <option value="">Select Type of Repair</option>
+                </select>
+                <br>
+                <label for="id_repair">Repair:</label>
+                <select id="id_repair" name="repair">
+                    <option value="">Select Repair</option>
+                </select>
+            </div>
+        </div>
+        <div class="button-container">
+            <button type="submit" class="disabled-button">Begin Repair</button>
+        </div>
+    </form>
+</body>
+</html>
+
+

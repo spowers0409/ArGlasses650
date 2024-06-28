@@ -1,0 +1,6 @@
+<h1>Select Repair for {{ vehicle }} - {{ repair_type }}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ repair_form.as_p }}
+    <button type="submit">Begin Repair</button>
+</form>
